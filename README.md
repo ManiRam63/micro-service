@@ -51,7 +51,7 @@ running the following command, just open again the command line and be happy.
 ## Install
 
     $ git clone https://github.com/ManiRam63/micro-service
-    $ cd chat-boot
+    $ cd micro-service
     $ npm install
 
 ## Running the project
