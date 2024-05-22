@@ -50,10 +50,20 @@ running the following command, just open again the command line and be happy.
 
 ## Install
 
-    $ git clone https://github.com/ManiRam63/chat-boot
-    $ cd chat-boot
+    $ git clone https://github.com/ManiRam63/micro-service
+    $ cd micro-service
     $ npm install
 
 ## Running the project
 
     $ npm run start
+
+## For start the Gateway
+
+    $ cd api-gateway 
+    $ npm i 
+    $ npm run start
+
+## More info of gateway you can check the official website
+
+ [official Express Gateway website](https://www.express-gateway.io/)
