@@ -1,0 +1,83 @@
+http:
+  port: 8080
+
+apiEndpoints:
+  user:
+    host: localhost
+    paths: '/api/user/*'
+    methods: ["GET", "POST", "PUT", "DELETE"]
+  room:
+    host: localhost
+    paths: '/api/room*'
+    methods: ["GET", "POST", "PUT", "DELETE"]
+  auth:
+    host: localhost
+    paths: '/api/*'
+    methods: ["GET", "POST", "PUT", "DELETE"]
+
+serviceEndpoints:
+  user:
+    url: 'http://localhost:3001/'
+  room:
+    url: 'http://localhost:3002/'
+  auth:
+    url: 'http://localhost:3000/'
+
+plugins:
+  - express-gateway-plugin-jwt
+  - request-transformer
+  
+policies:
+  - cors
+  - log
+  - proxy
+  - request-transformer
+
+pipelines:
+  userPipeline:
+    apiEndpoints:
+      - user
+    policies:
+      - cors:
+          - action:
+              origin: '*'
+              methods: 'GET,PUT,PATCH,POST,DELETE'
+      - log:
+          - action: 
+              message: '${req.method} ${req.originalUrl}'
+      - proxy:
+           - action:
+              serviceEndpoint: user
+              changeOrigin: true
+
+  roomPipeline:
+    apiEndpoints:
+      - room
+    policies:
+      - cors:
+          - action:
+              origin: '*'
+              methods: 'GET,PUT,PATCH,POST,DELETE'
+      - log:
+          - action: 
+              message: '${req.method} ${req.originalUrl}'
+      - proxy:
+          - action:
+              serviceEndpoint: room
+              changeOrigin: true
+
+  authPipeline:
+    apiEndpoints:
+      - auth
+    policies:
+      - cors:
+          - action:
+              origin: '*'
+              methods: 'GET,PUT,PATCH,POST,DELETE'
+      - log:
+          - action: 
+              message: '${req.method} ${req.originalUrl}'
+      - proxy:
+          - action:
+              serviceEndpoint: auth
+              changeOrigin: true
