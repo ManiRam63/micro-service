@@ -58,10 +58,12 @@ running the following command, just open again the command line and be happy.
 
     $ npm run start
 
-## For start the Gateway 
-   $ cd api-gateway 
-   $ npm i 
-   $ npm run start
+## For start the Gateway
 
-## More info of gateway you can follow the page
+    $ cd api-gateway 
+    $ npm i 
+    $ npm run start
+
+## More info of gateway you can check the official website
+
  [official Express Gateway website](https://www.express-gateway.io/)
