@@ -1,0 +1,29 @@
+{
+  "name": "auth-service",
+  "version": "1.0.0",
+  "main": "dist/app.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/app.ts",
+    "generate:grpc": "grpc_tools_node_protoc --ts_out=grpc_js:./src/generated --grpc_out=grpc_js:./src/generated --proto_path=./src/proto ./src/proto/*.proto"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.10.8",
+    "@grpc/proto-loader": "^0.7.13",
+    "@types/node": "^20.12.12",
+    "google-protobuf": "^3.21.2",
+    "grpc": "^1.24.11",
+    "grpc_tools_node_protoc_ts": "^5.3.3",
+    "grpc-tools": "^1.12.4",
+    "path": "^0.12.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "protoc-gen-grpc": "^2.0.4"
+  }
+}
