@@ -5,6 +5,7 @@ import { ResponseMessage } from '../utils/responseMessage'
 import mongoose from 'mongoose'
 import { errorResponse } from '../handler/responseHandler'
 import { STATUSCODE } from '../utils/statusCode'
+import { IUser } from '../interface/IUser'
 const filename: string = ' - index.ts'
 /**
  * @description: This function is used to validate the token
@@ -14,7 +15,7 @@ const filename: string = ' - index.ts'
  */
 export function auth(req: any, res: Response, next: NextFunction) {
   try {
-    const token = req.headers.authorization?.split(' ')[1]
+    const token: string | undefined = req.headers.authorization?.split(' ')[1]
     if (!token) {
       throw new Error(ResponseMessage.AUTH.INVALID_CREDENTIALS)
     }

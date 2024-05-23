@@ -4,7 +4,7 @@ http:
 apiEndpoints:
   user:
     host: localhost
-    paths: '/api/user/*'
+    paths: '/api/user*'
     methods: ["GET", "POST", "PUT", "DELETE"]
   room:
     host: localhost
@@ -30,6 +30,7 @@ plugins:
 policies:
   - cors
   - log
+  - jwt
   - proxy
   - request-transformer
 
@@ -42,6 +43,10 @@ pipelines:
           - action:
               origin: '*'
               methods: 'GET,PUT,PATCH,POST,DELETE'
+      - jwt:
+          - action:
+              secretOrPublicKey: 'jwtkeycddfdf2223'
+              checkCredentialExistence: false
       - log:
           - action: 
               message: '${req.method} ${req.originalUrl}'
@@ -61,6 +66,12 @@ pipelines:
       - log:
           - action: 
               message: '${req.method} ${req.originalUrl}'
+      - request-transformer:
+          - action:
+              headers:
+                add:
+                  Content-Type: "application/json"
+                remove: []
       - proxy:
           - action:
               serviceEndpoint: room
