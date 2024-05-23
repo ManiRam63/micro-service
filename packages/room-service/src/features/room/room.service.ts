@@ -92,7 +92,7 @@ const RoomService = {
           message: ResponseMessage.ROOM.ROOM_DELETED_SUCCESSFULLY,
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       return {
         error: error.message || ResponseMessage.ROOM.SOME_ERROR_OCCURRED,
       }
