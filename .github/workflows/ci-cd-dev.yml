@@ -9,6 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+        
     env:
       AUTH_SERVICE_PORT: ${{ secrets.AUTH_SERVICE_PORT }}
       USER_SERVICE_PORT: ${{ secrets.USER_SERVICE_PORT }}
@@ -18,7 +19,12 @@ jobs:
       JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
       GRPC_PORT: ${{ secrets.GRPC_PORT }}
       ROOM_GRPC_PORT: ${{ secrets.ROOM_GRPC_PORT }}
-
+    - name: Log Environment Variables
+      run: |
+        echo "DB_URL: $DB_URL"
+        echo "JWT_SECRET_KEY: $JWT_SECRET_KEY"
+        echo "GRPC_PORT: $GRPC_PORT"
+        # Add more environment variables as needed
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
