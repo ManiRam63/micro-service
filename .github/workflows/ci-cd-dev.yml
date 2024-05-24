@@ -30,8 +30,3 @@ jobs:
       
     - name: Run tests
       run: npm test
-      
-    - name: Build and deploy
-      run: |
-        npm run build
-        # Add deployment steps here, e.g., deploying to a server or cloud platform
