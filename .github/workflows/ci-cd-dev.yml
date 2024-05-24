@@ -9,6 +9,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+    env:
+      AUTH_SERVICE_PORT: ${{ secrets.AUTH_SERVICE_PORT }}
+      USER_SERVICE_PORT: ${{ secrets.USER_SERVICE_PORT }}
+      ROOM_SERVICE_PORT: ${{ secrets.ROOM_SERVICE_PORT }}
+      DB_URL: ${{ secrets.DB_URL }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+      GRPC_PORT: ${{ secrets.GRPC_PORT }}
+      ROOM_GRPC_PORT: ${{ secrets.ROOM_GRPC_PORT }}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -16,16 +26,13 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '21'
+        node-version: '14'
         
     - name: Install dependencies
       run: npm install
       
     - name: Run tests
       run: npm start
-
-    # - name: Run lint
-    #   run: npm lint
       
     - name: Build and deploy
       run: |
