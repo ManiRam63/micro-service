@@ -12,6 +12,7 @@ import logger from '../../logger/logger'
 import bcrypt from 'bcrypt'
 import { STATUSCODE } from '../../utils/statusCode'
 import mongoose from 'mongoose'
+import client from '../../grpc-server/client'
 const ResponseMessages = ResponseMessage.USER
 const fileName = 'user.controller.ts'
 /**
@@ -93,6 +94,16 @@ const UserController = {
           STATUSCODE.NotFound,
         )
       }
+      const data = await new Promise((resolve, reject) => {
+        client.getRoom({ roomId: '66388c1ee40bbaf9e5608c53' }, (err: string, res: any) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(res)
+          }
+        })
+      })
+      console.log(data, 'data')
       return successResponse(
         res,
         ResponseMessage.USER.USER_FETCH_SUCCESSFULLY,

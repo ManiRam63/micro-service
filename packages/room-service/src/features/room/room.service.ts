@@ -31,7 +31,7 @@ const RoomService = {
    */
   findById: async (id: mongoose.Types.ObjectId): Promise<IRoom> => {
     try {
-      return await RoomModel.findById(id).populate('createdBy').lean()
+      return await RoomModel.findById(id).lean()
     } catch (error) {
       return error
     }

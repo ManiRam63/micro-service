@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import connectDatabase from './config/index'
 import router from './routes'
+import '../src/grpc-client/server';
 connectDatabase()
 const app = express()
 app.use(bodyParser.json())
