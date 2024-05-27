@@ -1,9 +1,9 @@
-import mongoose, { QueryOptions } from 'mongoose'
-import { IMetaData, IRoom } from '../../interface/IRoom'
-import RoomModel from '../../model/room.model'
-import RoomMemberModel from '../../model/roomMember.model'
-import { ResponseMessage } from '../../../../common/utils/responseMessage'
-import { IRoomMember } from '../../interface/IRoomMember'
+import mongoose, { QueryOptions } from 'mongoose';
+import { IMetaData, IRoom } from '../../interface/IRoom';
+import RoomModel from '../../model/room.model';
+import RoomMemberModel from '../../model/roomMember.model';
+import { ResponseMessage } from '../../../../common/utils/responseMessage';
+import { IRoomMember } from '../../interface/IRoomMember';
 const RoomService = {
   /**
    * @description This function is used to create room in the database
@@ -11,17 +11,14 @@ const RoomService = {
    * @returns room object data
    */
 
-  create: async (
-    userId: mongoose.Types.ObjectId,
-    data: IRoom,
-  ): Promise<IRoom> => {
+  create: async (userId: mongoose.Types.ObjectId, data: IRoom): Promise<IRoom> => {
     try {
-      data.createdBy = userId
-      const room = new RoomModel(data)
-      const saved = await room.save()
-      return saved
+      data.createdBy = userId;
+      const room = new RoomModel(data);
+      const saved = await room.save();
+      return saved;
     } catch (error) {
-      return error
+      return error;
     }
   },
   /**
@@ -31,9 +28,9 @@ const RoomService = {
    */
   findById: async (id: mongoose.Types.ObjectId): Promise<IRoom> => {
     try {
-      return await RoomModel.findById(id).lean()
+      return await RoomModel.findById(id).lean();
     } catch (error) {
-      return error
+      return error;
     }
   },
   /**
@@ -43,12 +40,10 @@ const RoomService = {
    */
   findByAttribute: async (attributes: IRoom): Promise<IRoom> => {
     try {
-      const room = await RoomModel.findOne(attributes)
-        .populate('createdBy')
-        .lean()
-      return room
+      const room = await RoomModel.findOne(attributes).populate('createdBy').lean();
+      return room;
     } catch (error) {
-      return error
+      return error;
     }
   },
   /**
@@ -56,21 +51,19 @@ const RoomService = {
    * @param : requestObj
    * @returns success or error message
    */
-  updateRoom: async (
-    attributes: IRoom,
-  ): Promise<{ data?: IRoom; error?: string }> => {
+  updateRoom: async (attributes: IRoom): Promise<{ data?: IRoom; error?: string }> => {
     try {
-      const { _id, ...rest } = attributes
+      const { _id, ...rest } = attributes;
       const data: IRoom = await RoomModel.findByIdAndUpdate(_id, rest, {
         new: true,
-      }).lean()
+      }).lean();
       if (!data) {
-        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED }
+        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED };
       } else {
-        return { data }
+        return { data };
       }
     } catch (error) {
-      return { error: error }
+      return { error: error };
     }
   },
   /**
@@ -78,24 +71,22 @@ const RoomService = {
    * @param {*} id
    * @returns success or error message
    */
-  deleteRoom: async (
-    id: mongoose.Types.ObjectId,
-  ): Promise<{ message?: string; error?: string }> => {
+  deleteRoom: async (id: mongoose.Types.ObjectId): Promise<{ message?: string; error?: string }> => {
     try {
       const data = await RoomModel.findByIdAndUpdate(id, {
         isDeleted: true,
-      }).lean()
+      }).lean();
       if (!data) {
-        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED }
+        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED };
       } else {
         return {
           message: ResponseMessage.ROOM.ROOM_DELETED_SUCCESSFULLY,
-        }
+        };
       }
     } catch (error) {
       return {
         error: error.message || ResponseMessage.ROOM.SOME_ERROR_OCCURRED,
-      }
+      };
     }
   },
   /**
@@ -103,27 +94,25 @@ const RoomService = {
    * @param {QueryOptions}
    * @returns data , metadata
    */
-  list: async (
-    body: QueryOptions,
-  ): Promise<{ error?: string; rooms?: IRoom; metaData?: IMetaData }> => {
-    const { limit = 10, sort, page = 1, search: searchVal, order } = body
-    const offset = limit * (page - 1) || 0
+  list: async (body: QueryOptions): Promise<{ error?: string; rooms?: IRoom; metaData?: IMetaData }> => {
+    const { limit = 10, sort, page = 1, search: searchVal, order } = body;
+    const offset = limit * (page - 1) || 0;
     try {
-      const sortObj: any = {}
-      const orderNum = order === 'asc' ? 1 : -1
+      const sortObj = {};
+      const orderNum = order === 'asc' ? 1 : -1;
       if (sort) {
-        sortObj[sort] = +orderNum
+        sortObj[sort] = +orderNum;
       } else {
-        sortObj['name'] = 1
+        sortObj['name'] = 1;
       }
 
-      const match = []
+      const match = [];
       match.push({
         isDeleted: false,
-      })
-      let search: string = ''
+      });
+      let search: string = '';
       if (typeof searchVal === 'string') {
-        search = searchVal.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        search = searchVal.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
       match.push({
         $or: [
@@ -140,16 +129,12 @@ const RoomService = {
             },
           },
         ],
-      })
+      });
 
       const where = {
         $and: match,
-      }
-      const dataCond = [
-        { $sort: sortObj },
-        { $skip: +offset },
-        { $limit: +limit },
-      ]
+      };
+      const dataCond = [{ $sort: sortObj }, { $skip: +offset }, { $limit: +limit }];
       const aggregation = [
         { $match: where },
         {
@@ -187,21 +172,21 @@ const RoomService = {
             data: dataCond,
           },
         },
-      ]
+      ];
       const roomList = await RoomModel.aggregate(aggregation, {
         collation: { locale: 'en' },
-      })
+      });
       const metaData = {
         totalRecords: roomList[0]?.metadata[0]?.total || 0,
         currentPage: page,
         recordPerPage: limit,
-      }
-      const rooms = roomList.length ? roomList[0].data : []
-      return { rooms, metaData }
+      };
+      const rooms = roomList.length ? roomList[0].data : [];
+      return { rooms, metaData };
     } catch (e) {
       return {
         error: e?.message || ResponseMessage.ROOM.SOME_ERROR_OCCURRED,
-      }
+      };
     }
   },
   /**
@@ -209,18 +194,16 @@ const RoomService = {
    * @param {*} dataObj
    * @returns
    */
-  addRoomMember: async (
-    attributes: IRoomMember,
-  ): Promise<{ error?: string; result?: IRoomMember }> => {
+  addRoomMember: async (attributes: IRoomMember): Promise<{ error?: string; result?: IRoomMember }> => {
     try {
-      const member = new RoomMemberModel(attributes)
-      const result: IRoomMember = await member.save()
+      const member = new RoomMemberModel(attributes);
+      const result: IRoomMember = await member.save();
       if (!result) {
-        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED }
+        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED };
       }
-      return result
+      return result;
     } catch (error) {
-      return error
+      return error;
     }
   },
 
@@ -231,13 +214,10 @@ const RoomService = {
    */
   findMemberInRoom: async (attributes: IRoomMember): Promise<IRoom> => {
     try {
-      const result = await RoomMemberModel.findOne(attributes)
-        .populate('roomId')
-        .populate('userId')
-        .lean()
-      return result
+      const result = await RoomMemberModel.findOne(attributes).populate('roomId').populate('userId').lean();
+      return result;
     } catch (error) {
-      return error
+      return error;
     }
   },
 
@@ -246,13 +226,11 @@ const RoomService = {
    * @param {*} data
    * @returns
    */
-  deleteMemberFromRoom: async (
-    attributes: IRoomMember,
-  ): Promise<{ error?: string; result?: IRoomMember }> => {
+  deleteMemberFromRoom: async (attributes: IRoomMember): Promise<{ error?: string; result?: IRoomMember }> => {
     try {
-      return await RoomMemberModel.deleteOne(attributes).lean()
+      return await RoomMemberModel.deleteOne(attributes).lean();
     } catch (error) {
-      return error
+      return error;
     }
   },
   /**
@@ -260,11 +238,9 @@ const RoomService = {
    * @param {*} body
    * @returns
    */
-  findMemberOfRoom: async (
-    body: IRoomMember,
-  ): Promise<{ error?: string; result?: IRoomMember }> => {
+  findMemberOfRoom: async (body: IRoomMember): Promise<{ error?: string; result?: IRoomMember }> => {
     try {
-      const { roomId } = body
+      const { roomId } = body;
       const aggregation = [
         {
           $match: {
@@ -311,17 +287,17 @@ const RoomService = {
             members: { $addToSet: '$users' },
           },
         },
-      ]
+      ];
       const memberList = await RoomMemberModel.aggregate(aggregation, {
         collation: { locale: 'en' },
-      })
-      const result = memberList.length ? memberList : []
-      return result[0]
+      });
+      const result = memberList.length ? memberList : [];
+      return result[0];
     } catch (e) {
       return {
         error: e?.message || ResponseMessage.ROOM.SOME_ERROR_OCCURRED,
-      }
+      };
     }
   },
-}
-export default RoomService
+};
+export default RoomService;

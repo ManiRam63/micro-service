@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 const roomSchema = new mongoose.Schema(
   {
     name: {
@@ -21,6 +21,6 @@ const roomSchema = new mongoose.Schema(
     },
   },
   { timestamps: true },
-)
-const RoomModel = mongoose.model('Room', roomSchema)
-export default RoomModel
+);
+const RoomModel = mongoose.model('Room', roomSchema);
+export default RoomModel;

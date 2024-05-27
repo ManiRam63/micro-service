@@ -8,6 +8,7 @@
     "start:auth": "ts-node packages/auth-service/src/app.ts",
     "start:user": "ts-node packages/user-service/src/app.ts",
     "start:room": "ts-node packages/room-service/src/app.ts",
+    "install-all": "cd packages/auth-service && npm install && cd ../user-service && npm install && cd ../room-service && npm install",
     "start": "concurrently \"npm run start:auth\" \"npm run start:user\" \"npm run start:room\""
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 const roomMemberSchema = new mongoose.Schema(
   {
     roomId: {
@@ -17,6 +17,6 @@ const roomMemberSchema = new mongoose.Schema(
     },
   },
   { timestamps: true },
-)
-const RoomMemberModel = mongoose.model('RoomMember', roomMemberSchema)
-export default RoomMemberModel
+);
+const RoomMemberModel = mongoose.model('RoomMember', roomMemberSchema);
+export default RoomMemberModel;

@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from 'express'
-import Jwt from 'jsonwebtoken'
-import logger from '../logger/logger'
-import { ResponseMessage } from '../../../common/utils/responseMessage'
-import mongoose from 'mongoose'
-import { errorResponse } from '../handler/responseHandler'
-import { STATUSCODE } from '../../../common/utils/statusCode'
-const filename: string = ' - index.ts'
+import { Request, Response, NextFunction } from 'express';
+import Jwt from 'jsonwebtoken';
+import logger from '../../../common/logger/logger';
+import { ResponseMessage } from '../../../common/utils/responseMessage';
+import mongoose from 'mongoose';
+import { errorResponse } from '../handler/responseHandler';
+import { STATUSCODE } from '../../../common/utils/statusCode';
+const filename: string = ' - index.ts';
 /**
  * @description: This function is used to validate the token
  * @param req
@@ -14,34 +14,23 @@ const filename: string = ' - index.ts'
  */
 export function auth(req: any, res: Response, next: NextFunction) {
   try {
-    const token = req.headers.authorization?.split(' ')[1]
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      throw new Error(ResponseMessage.AUTH.INVALID_CREDENTIALS)
+      throw new Error(ResponseMessage.AUTH.INVALID_CREDENTIALS);
     }
-    const decodedToken = Jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY || '',
-    ) as any
-    const userId: mongoose.Types.ObjectId = decodedToken.user?._id
+    const decodedToken = Jwt.verify(token, process.env.JWT_SECRET_KEY || '') as any;
+    const userId: mongoose.Types.ObjectId = decodedToken.user?._id;
     if (!userId) {
-      return errorResponse(
-        res,
-        ResponseMessage.AUTH.USER_NOT_FOUND,
-        STATUSCODE.NotFound,
-      )
+      return errorResponse(res, ResponseMessage.AUTH.USER_NOT_FOUND, STATUSCODE.NotFound);
     } else {
-      req.user = decodedToken?.user
-      next()
+      req.user = decodedToken?.user;
+      next();
     }
   } catch (error) {
     logger.error(ResponseMessage.AUTH.INVALID_TOKEN + filename, {
       meta: error,
-    })
-    return errorResponse(
-      res,
-      ResponseMessage.AUTH.INVALID_TOKEN,
-      STATUSCODE.InternalServerError,
-    )
+    });
+    return errorResponse(res, ResponseMessage.AUTH.INVALID_TOKEN, STATUSCODE.InternalServerError);
   }
 }
 /**
@@ -52,24 +41,16 @@ export function auth(req: any, res: Response, next: NextFunction) {
  */
 export function validateId(req: Request, res: Response, next: NextFunction) {
   try {
-    const isValid = mongoose.Types.ObjectId.isValid(req?.params?.id)
+    const isValid = mongoose.Types.ObjectId.isValid(req?.params?.id);
     if (!isValid) {
-      return errorResponse(
-        res,
-        ResponseMessage.USER.INVALID_ID,
-        STATUSCODE.BadRequest,
-      )
+      return errorResponse(res, ResponseMessage.USER.INVALID_ID, STATUSCODE.BadRequest);
     } else {
-      next()
+      next();
     }
   } catch (error) {
     logger.error(ResponseMessage.USER.INVALID_ID + filename, {
       meta: error,
-    })
-    return errorResponse(
-      res,
-      ResponseMessage.USER.INVALID_ID,
-      STATUSCODE.BadRequest,
-    )
+    });
+    return errorResponse(res, ResponseMessage.USER.INVALID_ID, STATUSCODE.BadRequest);
   }
 }

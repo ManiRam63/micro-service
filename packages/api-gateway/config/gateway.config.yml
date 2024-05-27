@@ -43,10 +43,10 @@ pipelines:
           - action:
               origin: '*'
               methods: 'GET,PUT,PATCH,POST,DELETE'
-      - jwt:
-          - action:
-              secretOrPublicKey: 'jwtkeycddfdf2223'
-              checkCredentialExistence: false
+      # - jwt:
+      #     - action:
+      #         secretOrPublicKey: 'jwtkeycddfdf2223'
+      #         checkCredentialExistence: false
       - log:
           - action: 
               message: '${req.method} ${req.originalUrl}'
