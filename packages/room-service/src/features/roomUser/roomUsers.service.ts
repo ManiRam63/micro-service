@@ -1,27 +1,25 @@
-import { IRoomMember } from '../../interface/IRoomMember'
-import logger from '../../logger/logger'
-import { ResponseMessage } from '../../../../common/utils/responseMessage'
-import RoomMemberModel from '../../model/roomMember.model'
-import mongoose from 'mongoose'
+import { IRoomMember } from '../../interface/IRoomMember';
+import logger from '../../../../common/logger/logger';
+import { ResponseMessage } from '../../../../common/utils/responseMessage';
+import RoomMemberModel from '../../model/roomMember.model';
+import mongoose from 'mongoose';
 const RoomUserService = {
   /**
    * @description: this function is used to to add user to room
    * @param {*} dataObj
    * @returns
    */
-  addRoomMember: async (
-    attributes: IRoomMember,
-  ): Promise<{ error?: string; result?: IRoomMember }> => {
+  addRoomMember: async (attributes: IRoomMember): Promise<{ error?: string; result?: IRoomMember }> => {
     try {
-      const user = new RoomMemberModel(attributes)
-      const result: IRoomMember = await user.save()
+      const user = new RoomMemberModel(attributes);
+      const result: IRoomMember = await user.save();
       if (!result) {
-        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED }
+        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED };
       }
-      return result
+      return result;
     } catch (error) {
-      logger.error(error.message, { meta: error })
-      return error
+      logger.error(error.message, { meta: error });
+      return error;
     }
   },
   /**
@@ -29,18 +27,16 @@ const RoomUserService = {
    * @param roomId
    * @returns
    */
-  getAllUsers: async (
-    roomId: mongoose.Types.ObjectId,
-  ): Promise<{ error?: string; result?: IRoomMember[] }> => {
+  getAllUsers: async (roomId: mongoose.Types.ObjectId): Promise<{ error?: string; result?: IRoomMember[] }> => {
     try {
-      const results = await RoomMemberModel.find({ roomId: roomId })
+      const results = await RoomMemberModel.find({ roomId: roomId });
       if (!results) {
-        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED }
+        return { error: ResponseMessage.ROOM.SOME_ERROR_OCCURRED };
       }
-      return { result: results }
+      return { result: results };
     } catch (error) {
-      logger.error(error.message, { meta: error })
-      return { error: error.message }
+      logger.error(error.message, { meta: error });
+      return { error: error.message };
     }
   },
   /**
@@ -48,15 +44,13 @@ const RoomUserService = {
    * @param {*} data
    * @returns object of room data || {}
    */
-  findRoomUser: async (
-    attributes: IRoomMember,
-  ): Promise<{ error?: string; result?: IRoomMember[] }> => {
+  findRoomUser: async (attributes: IRoomMember): Promise<{ error?: string; result?: IRoomMember[] }> => {
     try {
-      return await RoomMemberModel.find(attributes).lean()
+      return await RoomMemberModel.find(attributes).lean();
     } catch (error) {
-      logger.error(error.message, { meta: error })
-      return error
+      logger.error(error.message, { meta: error });
+      return error;
     }
   },
-}
-export default RoomUserService
+};
+export default RoomUserService;

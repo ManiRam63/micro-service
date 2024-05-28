@@ -1,15 +1,18 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import userRoutes from './routes/index'
-import dotenv from 'dotenv'
-import connectDatabase from './config'
-dotenv.config()
-import './grpc-server/userService'
-const PORT = process.env.USER_SERVICE_PORT
-connectDatabase()
-const app = express()
-app.use(bodyParser.json())
-app.use('/api/user', userRoutes)
+import express from 'express';
+import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+dotenv.config();
+import connectDatabase from './config/index';
+import router from './routes';
+import userService from './grpc-server/userService';
+import createRoomServiceClient from '../src/grpc-server/client';
+connectDatabase();
+userService();
+createRoomServiceClient();
+const app = express();
+app.use(bodyParser.json());
+app.use('/api/user', router);
+const PORT = process.env.USER_SERVICE_PORT;
 app.listen(PORT, () => {
-  console.log(`User service running on port ${PORT}`)
-})
+  console.info(`user service running on port ${PORT}`);
+});

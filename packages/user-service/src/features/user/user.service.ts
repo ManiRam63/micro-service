@@ -1,34 +1,27 @@
-import UserModel from '../../model/user.model'
-import bcrypt from 'bcrypt'
-import { ResponseMessage } from '../../utils/responseMessage'
-import {
-  IUser,
-  IUserRestPasswordRequest,
-  IUserRestPasswordResponse,
-  UserData,
-  UserResult,
-  IMetaData,
-} from '../../interface/IUser'
-import mongoose, { QueryOptions } from 'mongoose'
-const responseMessage = ResponseMessage.USER
-const salt: string = bcrypt.genSaltSync(16)
+import UserModel from '../../model/user.model';
+import bcrypt from 'bcrypt';
+import { ResponseMessage } from '../../../../common/utils//responseMessage';
+import { IUser, IUserRestPasswordRequest, IUserRestPasswordResponse, UserData, UserResult, IMetaData } from '../../interface/IUser';
+import mongoose, { QueryOptions } from 'mongoose';
+const responseMessage = ResponseMessage.USER;
+const salt: string = bcrypt.genSaltSync(16);
 /**
  * @description: This function is used to create new user
  * @param : user data object
  * @returns : user response with data records
  */
 const UserService = {
-  create: async (
-    data: UserData,
-  ): Promise<{ result?: IUser; error?: string }> => {
-    const { password } = data
+  create: async (data: UserData): Promise<{ result?: IUser; error?: string }> => {
+    const { password } = data;
     if (password && typeof password === 'string') {
-      data.password = bcrypt.hashSync(password, salt)
+      data.password = bcrypt.hashSync(password, salt);
     }
-    const user = new UserModel(data)
-    let result: IUser = await user.save()
-    result = await UserModel.findOne({ _id: result?._id }).lean()
-    return result
+    const user = new UserModel(data);
+    let result: IUser = await user.save();
+    result = await UserModel.findOne({ _id: result?._id }).lean();
+    // sanitize user after the save data
+    const sanitizeUser = await UserService.sanitizeUser(result);
+    return sanitizeUser;
   },
 
   /**
@@ -36,14 +29,12 @@ const UserService = {
    * @param : _id
    * @returns : user response with data records
    */
-  findById: async (
-    id: mongoose.Types.ObjectId,
-  ): Promise<{ user?: IUser; error?: string }> => {
+  findById: async (id: mongoose.Types.ObjectId): Promise<{ user?: IUser; error?: string }> => {
     try {
-      const user: IUser = await UserModel.findOne({ _id: id }).lean()
-      return user
+      const user: IUser = await UserModel.findOne({ _id: id }).lean();
+      return user;
     } catch (error) {
-      return error
+      return error;
     }
   },
   /**
@@ -55,10 +46,10 @@ const UserService = {
     try {
       const user: IUser = await UserModel.findOne(attributes, {
         password: 1,
-      }).lean()
-      return user
+      }).lean();
+      return user;
     } catch (error) {
-      return error
+      return error;
     }
   },
   /**
@@ -66,24 +57,17 @@ const UserService = {
    * @param : dataObject
    * @returns : user response with data records
    */
-  updateUser: async (
-    id: mongoose.Types.ObjectId,
-    requestObj: IUser,
-  ): Promise<{ error?: string; result?: IUser }> => {
+  updateUser: async (id: mongoose.Types.ObjectId, requestObj: IUser): Promise<{ error?: string; result?: IUser }> => {
     try {
-      const updatedUser: IUser = await UserModel.findOneAndUpdate(
-        { _id: id },
-        requestObj,
-        { new: true },
-      ).lean()
+      const updatedUser: IUser = await UserModel.findOneAndUpdate({ _id: id }, requestObj, { new: true }).lean();
       if (!updatedUser) {
-        return { error: responseMessage.USER_NOT_FOUND }
+        return { error: responseMessage.USER_NOT_FOUND };
       }
-      return updatedUser
+      return updatedUser;
     } catch (error) {
       return {
         error: error?.message || responseMessage.SOME_ERROR_OCCURRED,
-      }
+      };
     }
   },
   /**
@@ -91,22 +75,20 @@ const UserService = {
    * @param : user id
    * @returns : Success and Error Message
    */
-  deleteUser: async (
-    id: mongoose.Types.ObjectId,
-  ): Promise<{ message?: string; error?: string }> => {
+  deleteUser: async (id: mongoose.Types.ObjectId): Promise<{ message?: string; error?: string }> => {
     try {
       const data = await UserModel.findByIdAndUpdate(
         { _id: id },
         {
           isDeleted: true,
         },
-      ).lean()
+      ).lean();
       if (!data) {
-        return { error: responseMessage.SOME_ERROR_OCCURRED }
+        return { error: responseMessage.SOME_ERROR_OCCURRED };
       }
-      return { message: responseMessage.USER_DELETED_SUCCESSFULLY }
+      return { message: responseMessage.USER_DELETED_SUCCESSFULLY };
     } catch (error) {
-      return { error: error?.message }
+      return { error: error?.message };
     }
   },
   /**
@@ -117,25 +99,25 @@ const UserService = {
   list: async (
     body: QueryOptions,
   ): Promise<{
-    users?: UserResult
-    metaData?: IMetaData
-    error?: string
+    users?: UserResult;
+    metaData?: IMetaData;
+    error?: string;
   }> => {
-    const { limit = 10, sort, page = 1, search = '', order } = body
-    const offset = limit * (page - 1) || 0
+    const { limit = 10, sort, page = 1, search = '', order } = body;
+    const offset = limit * (page - 1) || 0;
     try {
-      const sortObj = {}
-      const orderNum = order === 'asc' ? 1 : -1
+      const sortObj = {};
+      const orderNum = order === 'asc' ? 1 : -1;
       if (sort) {
-        sortObj[sort] = +orderNum
+        sortObj[sort] = +orderNum;
       } else {
-        sortObj['username'] = 1
+        sortObj['username'] = 1;
       }
 
-      const match = []
-      let searchVal = ''
+      const match = [];
+      let searchVal = '';
       if (search) {
-        searchVal = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        searchVal = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
       match.push({
         $or: [
@@ -144,14 +126,10 @@ const UserService = {
           { firstname: { $regex: searchVal, $options: 'i' } },
           { lastname: { $regex: searchVal, $options: 'i' } },
         ],
-      })
+      });
 
-      const where = { $and: match }
-      const dataCond = [
-        { $sort: sortObj },
-        { $skip: Number(offset) },
-        { $limit: Number(limit) },
-      ]
+      const where = { $and: match };
+      const dataCond = [{ $sort: sortObj }, { $skip: Number(offset) }, { $limit: Number(limit) }];
       const aggregation = [
         { $match: where },
         { $project: { password: 0 } },
@@ -161,20 +139,20 @@ const UserService = {
             data: dataCond,
           },
         },
-      ]
+      ];
 
       const usersList = await UserModel.aggregate(aggregation, {
         collation: { locale: 'en' },
-      })
+      });
       const metaData = {
         totalRecords: usersList[0]?.metadata[0]?.total || 0,
         currentPage: page,
         recordPerPage: limit,
-      }
-      const users = usersList.length ? usersList[0].data : []
-      return { users, metaData }
+      };
+      const users = usersList.length ? usersList[0].data : [];
+      return { users, metaData };
     } catch (e) {
-      return { error: e?.message }
+      return { error: e?.message };
     }
   },
   /**
@@ -182,14 +160,12 @@ const UserService = {
    * @param body
    * @returns success response and error
    */
-  resetPassword: async (
-    body: IUserRestPasswordRequest,
-  ): Promise<IUserRestPasswordResponse> => {
+  resetPassword: async (body: IUserRestPasswordRequest): Promise<IUserRestPasswordResponse> => {
     try {
-      const data: IUser = {}
-      const { email, newPassword } = body
+      const data: IUser = {};
+      const { email, newPassword } = body;
       if (newPassword && typeof newPassword === 'string') {
-        data.password = bcrypt.hashSync(newPassword, salt)
+        data.password = bcrypt.hashSync(newPassword, salt);
       }
       await UserModel.findOneAndUpdate(
         { email: email },
@@ -198,12 +174,12 @@ const UserService = {
             password: data.password,
           },
         },
-      )
+      );
       return {
         message: ResponseMessage.USER.PASSWORD_UPDATED_SUCCESSFULLY,
-      }
+      };
     } catch (error) {
-      return error
+      return error;
     }
   },
   /**
@@ -213,14 +189,28 @@ const UserService = {
    */
   findUserByEmail: async (email: string): Promise<IUser> => {
     try {
-      const user = await UserModel.findOne(
-        { email: email },
-        { email: 1, password: 1, username: 1, firstname: 1, lastname: 1 },
-      ).lean()
+      const user = await UserModel.findOne({ email: email }, { email: 1, password: 1, username: 1, firstname: 1, lastname: 1 }).lean();
+      // if (user) {
+      //   return UserService.sanitizeUser(user);
+      // }
       return user
     } catch (error) {
-      return error
+      return error;
     }
   },
-}
-export default UserService
+  /**
+   * @description: This function is used to sanitize the user data
+   * @param user
+   * @returns return without password
+   */
+
+  sanitizeUser: async (user: IUser): Promise<IUser> => {
+    try {
+      const { password, ...sanitizedUser } = user;
+      return sanitizedUser;
+    } catch (error) {
+      return error;
+    }
+  },
+};
+export default UserService;

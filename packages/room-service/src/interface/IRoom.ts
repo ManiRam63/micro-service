@@ -1,41 +1,43 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 export interface IRoom {
-  _id?: mongoose.Types.ObjectId
-  name?: string
-  roomType?: string
-  createdBy?: mongoose.Types.ObjectId
-  isDeleted?: boolean
-  error?: string
-  metaData?: IMetaData
-  userId?: mongoose.Types.ObjectId
-  roomId?: mongoose.Types.ObjectId
+  _id?: mongoose.Types.ObjectId;
+  name?: string;
+  roomType?: string;
+  createdBy?: mongoose.Types.ObjectId;
+  isDeleted?: boolean;
+  error?: string;
+  metaData?: IMetaData;
+  userId?: mongoose.Types.ObjectId;
+  roomId?: mongoose.Types.ObjectId;
 }
 
 export interface IMetaData {
-  totalRecords?: number
-  currentPage?: number
-  recordPerPage?: number
+  totalRecords?: number;
+  currentPage?: number;
+  recordPerPage?: number;
 }
 export interface IUserQuery extends Request {
-  query?: IRoom
+  query: {
+    roomId: string;
+  };
 }
 export interface UserData {
-  _id?: mongoose.Types.ObjectId
-  username: string
-  email: string
-  firstname: string
-  lastname: string
-  password: string
+  _id?: mongoose.Types.ObjectId;
+  username: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  password: string;
 }
 
 export interface UserRequest extends Request {
-  user?: UserData
+  user?: UserData;
 }
 export interface IUserRes {
-  user?: unknown
+  user?: unknown;
 }
 
 export interface IUserRequest extends Request {
-  user?: unknown
+  user?: unknown;
 }
