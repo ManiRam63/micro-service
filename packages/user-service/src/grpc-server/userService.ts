@@ -2,6 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import UserService from '../features/user/user.service';
 import path from 'path';
+
 const PROTO_PATH = path.resolve(__dirname, '../../../proto-files/user.proto');
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -12,13 +13,12 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 });
 
 const userProto = grpc.loadPackageDefinition(packageDefinition) as any;
-const users = [];
+
 async function getUsers(body) {
   const obj = {
     limit: body?.limit || 10,
   };
   const userList = await UserService.list(obj);
-  users.push(userList.users);
   return userList;
 }
 
@@ -38,7 +38,7 @@ async function getUser(call, callback) {
   }
 }
 
-async function getUserBYEmail(call, callback) {
+async function GetUserEmail(call, callback) {
   const email = call.request.email;
   const userData = await UserService.findUserByEmail(email);
   const response = { user: userData };
@@ -66,19 +66,19 @@ async function findById(call, callback) {
   }
 }
 
-async function main() {
+function userService() {
   const server1 = new grpc.Server();
   const server2 = new grpc.Server();
 
   server1.addService(userProto.user.UserService.service, {
     getUser: getUser,
-    GetUserEmail: getUserBYEmail,
+    GetUserEmail: GetUserEmail,
     findById: findById,
   });
 
   server2.addService(userProto.user.UserService.service, {
     getUser: getUser,
-    GetUserEmail: getUserBYEmail,
+    GetUserEmail: GetUserEmail,
     findById: findById,
   });
 
@@ -92,5 +92,4 @@ async function main() {
     server2.start();
   });
 }
-
-main();
+export default userService;

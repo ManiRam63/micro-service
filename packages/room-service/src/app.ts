@@ -4,8 +4,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 import connectDatabase from './config/index';
 import router from './routes';
-import '../src/grpc-client/server';
+import mainService from '../src/grpc-client/server';
 connectDatabase();
+// mainService()
 const app = express();
 app.use(bodyParser.json());
 app.use('/api/room', router);

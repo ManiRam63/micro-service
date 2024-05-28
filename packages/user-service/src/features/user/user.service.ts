@@ -20,7 +20,7 @@ const UserService = {
     let result: IUser = await user.save();
     result = await UserModel.findOne({ _id: result?._id }).lean();
     // sanitize user after the save data
-    const sanitizeUser = await UserService.sanitizeUser(result)
+    const sanitizeUser = await UserService.sanitizeUser(result);
     return sanitizeUser;
   },
 
@@ -183,25 +183,26 @@ const UserService = {
     }
   },
   /**
- * @description : this function is used to get user data via email address
- * @param email
- * @returns object of user data
- */
+   * @description : this function is used to get user data via email address
+   * @param email
+   * @returns object of user data
+   */
   findUserByEmail: async (email: string): Promise<IUser> => {
     try {
       const user = await UserModel.findOne({ email: email }, { email: 1, password: 1, username: 1, firstname: 1, lastname: 1 }).lean();
-      if (user) {
-        return UserService.sanitizeUser(user);
-      }
+      // if (user) {
+      //   return UserService.sanitizeUser(user);
+      // }
+      return user
     } catch (error) {
       return error;
     }
   },
   /**
-    * @description: This function is used to sanitize the user data
-    * @param user 
-    * @returns return without password 
-    */
+   * @description: This function is used to sanitize the user data
+   * @param user
+   * @returns return without password
+   */
 
   sanitizeUser: async (user: IUser): Promise<IUser> => {
     try {
@@ -211,6 +212,5 @@ const UserService = {
       return error;
     }
   },
-
 };
 export default UserService;

@@ -104,7 +104,7 @@ const RoomController = {
       if (validate.error) {
         return errorResponse(res, validate.error.message, STATUSCODE.BadRequest);
       }
-      req.body._id = id
+      req.body._id = id;
       const result = await RoomService.updateRoom(req.body);
       if (result?.error) {
         const message = result?.error ? result?.error : ResponseMessage.ROOM.SOME_ERROR_OCCURRED;

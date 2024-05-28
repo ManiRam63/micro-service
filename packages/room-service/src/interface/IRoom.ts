@@ -19,8 +19,8 @@ export interface IMetaData {
 }
 export interface IUserQuery extends Request {
   query: {
-    roomId: string
-  }
+    roomId: string;
+  };
 }
 export interface UserData {
   _id?: mongoose.Types.ObjectId;

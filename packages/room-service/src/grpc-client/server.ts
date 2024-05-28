@@ -2,6 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import RoomService from '../features/room/room.service';
 import path from 'path';
+
 const PROTO_PATH = path.resolve(__dirname, '../../../proto-files/room.proto');
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -12,6 +13,7 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 });
 
 const roomProto = grpc.loadPackageDefinition(packageDefinition) as any;
+
 async function getRoom(call, callback) {
   const roomId = call.request.roomId;
   const room = await RoomService.findById(roomId);
@@ -29,7 +31,7 @@ async function getRoom(call, callback) {
   }
 }
 
-async function main() {
+function mainService() {
   const server1 = new grpc.Server();
   server1.addService(roomProto.room.RoomService.service, {
     getRoom: getRoom,
@@ -40,4 +42,5 @@ async function main() {
     server1.start();
   });
 }
-main();
+
+export default mainService;
