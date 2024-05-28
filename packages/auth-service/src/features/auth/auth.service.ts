@@ -18,7 +18,7 @@ const AuthService = {
     const { email, password } = data;
     try {
       const response: IUserRes = await new Promise((resolve, reject) => {
-        client.GetUserEmail({ email: email }, (err: string, response: Response) => {
+        client.getUserByEmail({ email: email }, (err: string, response: Response) => {
           if (err) {
             reject(err);
           } else {
